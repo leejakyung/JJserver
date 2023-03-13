@@ -1,4 +1,4 @@
-package com.jjserver;
+package com.chatting.server;
 
 class JjserverApplicationTests {
 
