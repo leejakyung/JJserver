@@ -1,4 +1,4 @@
-package com.chatting.server.model;
+package com.chatting.server.model.sample;
 
 import java.io.IOException;
 import java.net.ServerSocket;

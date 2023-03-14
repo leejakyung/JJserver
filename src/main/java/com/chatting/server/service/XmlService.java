@@ -1,6 +1,6 @@
 package com.chatting.server.service;
 
-import com.chatting.server.model.User;
+import com.chatting.server.model.UserVO;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class XmlService implements DataService {
 
     //xml을 읽고 입력받은 id와 pw가 일치하는지 조회
     @Override
-    public int existLogin(User user) {
+    public int existLogin(UserVO user) {
         return 0;
     }
 

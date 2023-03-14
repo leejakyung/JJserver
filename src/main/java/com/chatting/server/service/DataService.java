@@ -1,6 +1,6 @@
 package com.chatting.server.service;
 
-import com.chatting.server.model.User;
+import com.chatting.server.model.UserVO;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public interface DataService {
     boolean existId(String id);
 
     //xml을 읽고 입력받은 id와 pw가 일치하는지 조회
-    int existLogin(User user);
+    int existLogin(UserVO user);
 
     int existLogin(String id, String pw);
 

@@ -1,6 +1,6 @@
 package com.chatting.server.model;
 
-public class User {
+public class UserVO {
 
     private String id;
     private String pw;
