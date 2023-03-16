@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<userList>
+    <user>
+        <id>jklee</id>
+        <pw>1234</pw>
+        <name>이자경</name>
+    </user>
+    <user>
+        <id>abcd1234</id>
+        <pw>abcd1234</pw>
+        <name>홍길동</name>
+    </user>
+    <user>
+        <id>qwer1234</id>
+        <pw>qwer1234</pw>
+        <name>척준경</name>
+    </user>
+    <user>
+        <id>asdf1234</id>
+        <pw>asdf1234</pw>
+        <name>아무개</name>
+    </user>
+    <user>
+        <id>abcdefg</id>
+        <pw>abcdefg</pw>
+        <name>김김김</name>
+    </user>
+    <user>
+        <id>xyz123</id>
+        <pw>xyz123</pw>
+        <name>김영숙</name>
+    </user>
+</userList>
