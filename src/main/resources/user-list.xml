@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<userList>
+    <user id="jklee" pw="1234" name="이자경"/>
+    <user id="abcd1234" pw="abcd1234" name="홍길동"/>
+    <user id="qwer1234" pw="qwer1234" name="척준경"/>
+    <user id="asdf1234" pw="asdf1234" name="아무개"/>
+    <user id="abcdefg" pw="abcdefg" name="김김김"/>
+    <user id="xyz123" pw="xyz123" name="김영숙"/>
+</userList>
