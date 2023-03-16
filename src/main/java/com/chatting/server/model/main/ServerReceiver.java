@@ -54,8 +54,8 @@ public class ServerReceiver extends Thread{
                 if("100".equals(result)) {
                 	String id = loginResult[1];
                     String pw = loginResult[2];
-                	oos.writeObject(result+" "+id+" "+pw+" "+"로그인 성공");
-                }
+                	oos.writeObject("로그인 성공");
+                } 
 
                 String s = "";
 
