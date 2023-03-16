@@ -5,7 +5,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 public class User implements Runnable {
+	
+	private static final Logger logger = LogManager.getLogger(User.class);
 
     private final String userName;
     private final Socket socket;
@@ -46,10 +52,10 @@ public class User implements Runnable {
             run_start://while문같은 반복문 전체를 빠져 나가도록 처리할 때
             while (!isStop) {
 
-                System.out.println("메세지를 수신했습니다.");
+            	logger.info("메세지를 수신했습니다.");
 
                 String msg = ois.readObject().toString();
-                System.out.println(msg);
+                logger.info(msg);
             }
         } catch (Exception e) {
             e.printStackTrace();
