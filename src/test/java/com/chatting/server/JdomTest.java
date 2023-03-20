@@ -2,8 +2,12 @@ package com.chatting.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.logging.log4j.Logger;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,9 +17,11 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.junit.jupiter.api.Test;
 
+import com.chatting.server.model.main.User;
+
 public class JdomTest {
-	
-	
+
+
 	private static final Logger logger = LogManager.getLogger(JdomTest.class);
 
 	@Test
@@ -30,25 +36,33 @@ public class JdomTest {
 		try {
 			Document doc = saxBuilder.build(file);
 			Element root = doc.getRootElement();
+			logger.info(root.getName());
 
-			Element e_userList = root.getChild("userList");
-			logger.info("userList");
-			
+			Element e_userList = root.getChild("user");
+			logger.info(e_userList.getName());
+	
+
 			List<Element> children = e_userList.getChildren("user");
+			
+
+			
 			Iterator<Element> iter = children.iterator();
-			for(int i = 0; i < 1; i++) {
-				if(!iter.hasNext()) {
-					break;
-				}
+			
+		
+			List<Map<String, String>> userList = new ArrayList<Map<String,String>>();		
+			
+			while(iter.hasNext()) {
 
 				Element e = iter.next();
-				String id = e.getChildTextTrim("id");
-				String pw = e.getChildTextTrim("pw");
-				String name = e.getChildTextTrim("name");
-
-				System.out.println(id);
-				System.out.println(pw);
-				System.out.println(name);
+//				logger.info(e.getName()+": "+e.getValue());
+				
+				Map<String, String> map = new HashMap<String, String>();
+				map.put(e.getName(), e.getValue());
+				
+				userList.add(map);
+				
+				logger.info(map);
+				
 			}
 
 
