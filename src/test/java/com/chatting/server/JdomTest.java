@@ -2,11 +2,8 @@ package com.chatting.server;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.net.URL;
+import java.util.*;
 
 import org.apache.logging.log4j.Logger;
 
@@ -75,6 +72,35 @@ public class JdomTest {
 			e.printStackTrace();
 		}
 
+	}
 
+	@Test
+	void jsjeong() {
+
+		try {
+			URL resource = getClass().getClassLoader().getResource("user-info.xml");
+			Document document = new SAXBuilder().build(resource);
+
+			Element root = document.getRootElement();
+			List<Element> userList = root.getChildren("user");
+
+			List<Map<String, String>> result = new ArrayList<>();
+
+			for (Iterator<Element> iterator = userList.iterator(); iterator.hasNext(); ) {
+				Element element = iterator.next();
+
+				Map<String, String> user = new HashMap<>();
+				user.put("id", element.getChildText("id"));
+				user.put("pw", element.getChildText("pw"));
+				user.put("name", element.getChildText("name"));
+
+				result.add(user);
+			}
+
+			System.out.println(result.size());
+			System.out.println(Arrays.toString(result.toArray()));
+		} catch (JDOMException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
