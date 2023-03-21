@@ -38,7 +38,6 @@ public class ServerReceiver extends Thread{
     }
     
 
-    // 여기서 인자로 리턴 값을 받아서 
     @Override
     public void run() {
 
@@ -56,20 +55,7 @@ public class ServerReceiver extends Thread{
                 String msg = ois.readObject().toString();
                 logger.info(msg);
                 
-                String[] loginResult = msg.split(" ");
-                String result = loginResult[0];
-             
-                logger.info(result);
-                
-               
-                if("100".equals(result)) {
-                	// if 여기들어온 아이디 패스워드가 받아온 리스트에 있으면 성공
-                	String id = loginResult[1];
-                    String pw = loginResult[2];
-                	oos.writeObject("로그인 성공");
-                	
-                	// else 없으면 로그인실패 
-                } 
+    
 
                 String s = "";
 
@@ -100,8 +86,47 @@ public class ServerReceiver extends Thread{
         }
     }
     
+    public void checkLogin(List<Map<String, String>> userList) {
+    	
+    	
+		try {
+			String msg = ois.readObject().toString();
+			logger.info(msg);
+			
+			String[] loginResult = msg.split(" ");
+			String result = loginResult[0];
+			
+			if("100".equals(result)) {
+				parseCheck();
+
+				String id = loginResult[1];
+				String pw = loginResult[2];
+		    	
+				if(userList.contains(id)) {
+					if(userList.contains(pw)) {
+						oos.writeObject("로그인 성공");						
+					} else {
+						oos.writeObject("로그인 실패");		
+					}
+				} else {
+					oos.writeObject("로그인 실패");		
+				}
+				
+            } 
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	
+    	
+    }
     
-    public List checkLogin() {
+    
+    public List<Map<String, String>> parseCheck() {
     	String filePath = "E:\\project_jklee\\jjserver\\src\\main\\resources\\user-info.xml";
     	
     	File file = new File(filePath);
@@ -128,6 +153,7 @@ public class ServerReceiver extends Thread{
 				result.add(user);
 			}
 			
+			return result;
 			
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
@@ -137,9 +163,8 @@ public class ServerReceiver extends Thread{
 			e.printStackTrace();
 		}
 		
+		return null;
 		
-		// 여기서 리스트 값을 넘겨줌 
-		return checkLogin();
 		
     }
 }
