@@ -35,15 +35,12 @@ public class JdomTest {
 			Element root = doc.getRootElement();
 			logger.info(root.getName());
 
-			Element e_userList = root.getChild("user");
-			logger.info(e_userList.getName());
+			List<Element> e_userList = root.getChildren("user");
+			logger.info(e_userList);
 	
 
-			List<Element> children = e_userList.getChildren("user");
 			
-
-			
-			Iterator<Element> iter = children.iterator();
+			Iterator<Element> iter = e_userList.iterator();
 			
 		
 			List<Map<String, String>> userList = new ArrayList<Map<String,String>>();		
@@ -54,13 +51,15 @@ public class JdomTest {
 //				logger.info(e.getName()+": "+e.getValue());
 				
 				Map<String, String> map = new HashMap<String, String>();
-				map.put(e.getName(), e.getValue());
+				map.put("id", e.getChildText("id"));
+				map.put("pw", e.getChildText("pw"));
+				map.put("name", e.getChildText("name"));
 				
 				userList.add(map);
 				
-				logger.info(map);
 				
 			}
+			logger.info(userList);
 
 
 
@@ -95,6 +94,7 @@ public class JdomTest {
 				user.put("name", element.getChildText("name"));
 
 				result.add(user);
+
 			}
 
 			System.out.println(result.size());
