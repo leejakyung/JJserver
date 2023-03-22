@@ -63,35 +63,16 @@ public class ServerReceiver extends Thread{
 						String id = loginResult[1];
 						String pw = loginResult[2];
 
-						URL resource = getClass().getClassLoader().getResource("user-info.xml");
-						Document document = new SAXBuilder().build(resource);
+					
+						getUserList();
 
-						Element root = document.getRootElement();
-						List<Element> userList = root.getChildren("user");
-
-						List<Map<String, String>> result = new ArrayList<>();
-
-						for (Element element : userList) {
-							Map<String, String> user = new HashMap<>();
-							user.put("id", element.getChildText("id"));
-							user.put("pw", element.getChildText("pw"));
-							user.put("name", element.getChildText("name"));
-
-							result.add(user);
-
-						}
-
-						if(userList.contains(pw)) {
+						boolean result = validateUser(id, pw);
+						if(result == true) {
 							oos.writeObject("로그인 성공");
 						} else {
 							oos.writeObject("로그인 실패");
 						}
-
-
-
-
-
-
+						
 						break;
 					case Protocol.createRoomView:
 
@@ -114,13 +95,47 @@ public class ServerReceiver extends Thread{
     
 	public boolean validateUser(String id, String pw){
 		List<Map<String, String>> userList = getUserList();
+		
+			if(userList.contains(id)) {
+				if(userList.contains(pw)) {
+					return true;
+				} else {	
+					return false;
+				}
+			} else {
+				return false;
+			}
 
 
-		return true;
 	}
 
 	public List<Map<String, String>> getUserList(){
 		List<Map<String, String>> list = new ArrayList<>();
+		
+		URL resource = getClass().getClassLoader().getResource("user-info.xml");
+		
+		try {
+			Document document = new SAXBuilder().build(resource);
+			Element root = document.getRootElement();
+			List<Element> userList = root.getChildren("user");
+			
+			
+			for (Element element : userList) {
+				Map<String, String> user = new HashMap<>();
+				user.put("id", element.getChildText("id"));
+				user.put("pw", element.getChildText("pw"));
+				user.put("name", element.getChildText("name"));
+				
+				list.add(user);
+				
+			}
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 
 		return list;
