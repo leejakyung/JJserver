@@ -96,16 +96,18 @@ public class ServerReceiver extends Thread{
 	public boolean validateUser(String id, String pw){
 		List<Map<String, String>> userList = getUserList();
 		
-			if(userList.contains(id)) {
-				if(userList.contains(pw)) {
+		for(Iterator<Map<String, String>> iter = userList.iterator(); iter.hasNext();) {
+			Map<String, String> element = iter.next();
+			
+			if(element.get(id).contains(id)) {
+				if(element.get(pw).contains(pw)) {
 					return true;
-				} else {	
-					return false;
 				}
 			} else {
 				return false;
 			}
-
+		}
+		return false;
 
 	}
 
