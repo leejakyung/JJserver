@@ -24,7 +24,7 @@ public class JdomTest {
 	@Test
 	public void jdomTest1()  {
 
-		String filePath = "E:\\project_jklee\\jjserver\\src\\main\\resources\\user-info.xml";
+		String filePath = "D:\\project_jj\\jjserver\\src\\main\\resources\\user-info.xml";
 
 		File file = new File(filePath);
 
@@ -37,29 +37,38 @@ public class JdomTest {
 
 			List<Element> e_userList = root.getChildren("user");
 			logger.info(e_userList);
-	
 
-			
+
 			Iterator<Element> iter = e_userList.iterator();
-			
-		
+
+
 			List<Map<String, String>> userList = new ArrayList<Map<String,String>>();		
-			
+
 			while(iter.hasNext()) {
 
 				Element e = iter.next();
-//				logger.info(e.getName()+": "+e.getValue());
-				
+				//				logger.info(e.getName()+": "+e.getValue());
+
 				Map<String, String> map = new HashMap<String, String>();
 				map.put("id", e.getChildText("id"));
 				map.put("pw", e.getChildText("pw"));
 				map.put("name", e.getChildText("name"));
-				
+
 				userList.add(map);
-				
-				
+
 			}
 			logger.info(userList);
+
+
+			String s = "";
+			String p = "";
+			for (int i = 0; i < userList.size(); i++) {
+				Map<String, String> user = userList.get(i);
+	
+				logger.info(user);
+			}
+			logger.info(s);
+			logger.info(p);
 
 
 

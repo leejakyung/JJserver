@@ -67,7 +67,7 @@ public class ServerReceiver extends Thread{
 						getUserList();
 
 						boolean result = validateUser(id, pw);
-						if(result == true) {
+						if(result) {
 							oos.writeObject("로그인 성공");
 						} else {
 							oos.writeObject("로그인 실패");
@@ -96,14 +96,15 @@ public class ServerReceiver extends Thread{
 	public boolean validateUser(String id, String pw){
 		List<Map<String, String>> userList = getUserList();
 		
-		for(Iterator<Map<String, String>> iter = userList.iterator(); iter.hasNext();) {
-			Map<String, String> element = iter.next();
+		
+		for (int i = 0; i < userList.size(); i++) {
 			
-			if(element.get(id).contains(id)) {
-				if(element.get(pw).contains(pw)) {
+			Map<String, String> user = new HashMap<String, String>();
+			
+			if(userList.get(i).get("id").contains(id)) {
+				if(userList.get(i).get("pw").contains(pw)) {
 					return true;
 				}
-			} else {
 				return false;
 			}
 		}
