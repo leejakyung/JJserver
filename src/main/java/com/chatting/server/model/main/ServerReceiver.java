@@ -68,9 +68,11 @@ public class ServerReceiver extends Thread{
 
 						boolean result = validateUser(id, pw);
 						if(result) {
-							oos.writeObject("로그인 성공");
+							oos.writeObject("100#Y"); // 로그인 성공
+							
+							
 						} else {
-							oos.writeObject("로그인 실패");
+							oos.writeObject("100#N"); // 로그인  실패 
 						}
 						
 						break;
