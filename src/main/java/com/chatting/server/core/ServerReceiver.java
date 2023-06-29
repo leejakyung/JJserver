@@ -80,7 +80,7 @@ public class ServerReceiver extends Thread{
 						List<String> loginList = new ArrayList<String>();
 						List<String> logoutList = new ArrayList<String>();
 						
-						for (int i = 0; i < userList.size(); i++) {
+						for (int i = 0; i < userList.size(); i++) { 
 							String user_id = userList.get(i).getId();
 							totalUserId.add(user_id);
 						}
@@ -88,7 +88,7 @@ public class ServerReceiver extends Thread{
 
 						boolean result = validateUser(id, pw);
 						if(result) {
-							oos.writeObject("100#Y"); // 로그인 성공
+							oos.writeObject("100#Y#" + id); // 로그인 성공
 							loginList.add(id);	
 							oos.writeObject("120#in#" + loginList); // 로그인 리스트 
 							for(String item : totalUserId) {
@@ -100,7 +100,7 @@ public class ServerReceiver extends Thread{
 							
 							
 						} else {
-							oos.writeObject("100#N"); // 로그인  실패 
+							oos.writeObject("100#N#" + id); // 로그인  실패 
 						}
 						
 						break;
