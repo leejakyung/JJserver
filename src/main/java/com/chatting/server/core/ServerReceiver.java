@@ -1,4 +1,4 @@
-package com.chatting.server.model.main;
+package com.chatting.server.core;
 
 import java.io.*;
 import java.net.Socket;
@@ -10,25 +10,27 @@ import java.util.List;
 import java.util.Map;
 
 import com.chatting.server.model.Protocol;
+import com.chatting.server.model.User;
+import com.chatting.server.service.UserService;
+import com.chatting.server.service.XmlUserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 
 
 public class ServerReceiver extends Thread{
+    private static final Logger logger = LogManager.getLogger(ServerReceiver.class);
 
-    private Socket socket;
-
+	private final UserService userService = new XmlUserService();
+    private final Socket socket;
+	private List<ServerReceiver> onlineList;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
-    private BufferedWriter writer;
-    private BufferedReader reader;
 
-    private static final Logger logger = LogManager.getLogger(ServerReceiver.class);
-    
+
     public ServerReceiver(Socket socket){
         this.socket = socket;
         try{
@@ -38,7 +40,17 @@ public class ServerReceiver extends Thread{
             e.printStackTrace();
         }
     }
-    
+
+	public ServerReceiver(Socket socket, List<ServerReceiver> onlineList){
+		this.onlineList = onlineList;
+		this.socket = socket;
+		try{
+			ois = new ObjectInputStream(socket.getInputStream());
+			oos = new ObjectOutputStream(socket.getOutputStream());
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+	}
 
     @Override
     public void run() {
@@ -63,7 +75,7 @@ public class ServerReceiver extends Thread{
 						String id = loginResult[1];
 						String pw = loginResult[2];
 
-					
+						List<User> userList = userService.getAllUserList();
 						getUserList();
 
 						boolean result = validateUser(id, pw);
@@ -144,5 +156,15 @@ public class ServerReceiver extends Thread{
 
 
 		return list;
+	}
+
+	private void broadcasting() throws IOException {
+		for (ServerReceiver receiver: onlineList) {
+			receiver.getOos().writeObject("유저리스트");
+		}
+	}
+
+	public ObjectOutputStream getOos(){
+		return this.oos;
 	}
 }

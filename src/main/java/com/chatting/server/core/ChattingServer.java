@@ -1,4 +1,4 @@
-package com.chatting.server.model.main;
+package com.chatting.server.core;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -39,7 +39,7 @@ public class ChattingServer extends Thread {
                 Socket socket = serverSocket.accept();
                 logger.info(socket.getInetAddress().getHostName() + "해당 소켓이 연결됐습니다.");
 
-                ServerReceiver receiver = new ServerReceiver(socket);
+                ServerReceiver receiver = new ServerReceiver(socket, onlineList);
                 receiver.start();
 
                 onlineList.add(receiver);

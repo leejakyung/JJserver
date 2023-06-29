@@ -1,6 +1,6 @@
 package com.chatting.server;
 
-import com.chatting.server.model.main.ChattingServer;
+import com.chatting.server.core.ChattingServer;
 
 public class ChattingServerLauncher {
 
