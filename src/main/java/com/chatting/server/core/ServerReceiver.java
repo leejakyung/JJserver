@@ -67,40 +67,35 @@ public class ServerReceiver extends Thread{
                 String msg = ois.readObject().toString(); //클라이언트로 부터 오는 메세지 수신 담당, 항상 메세지를 받은 이후부터 모든 서버업무가 수행이 가능함
 				logger.info("{} - 메세지를 수신했습니다.", msg);
 
-				String[] loginResult = msg.split(" ");
+				String[] arr = msg.split(Protocol.seperator);
 
-				switch (loginResult[0]){ //첫번째 코드로 메세지 실행 내용 분류
+				switch (arr[0]){ //첫번째 코드로 메세지 실행 내용 분류
 					case Protocol.checkLogin:
 
-						String id = loginResult[1];
-						String pw = loginResult[2];
-
-						List<User> userList = userService.getAllUserList();
-						List<String> totalUserId = new ArrayList<String>();
-						List<String> loginList = new ArrayList<String>();
-						List<String> logoutList = new ArrayList<String>();
-						
-						for (int i = 0; i < userList.size(); i++) { 
-							String user_id = userList.get(i).getId();
-							totalUserId.add(user_id);
-						}
-//						getUserList();
+						String id = arr[1];
+						String pw = arr[2];
 
 						boolean result = validateUser(id, pw);
 						if(result) {
-							oos.writeObject("100#Y#" + id); // 로그인 성공
-							loginList.add(id);	
-							oos.writeObject("120#in#" + loginList); // 로그인 리스트 
-							for(String item : totalUserId) {
-								if(!loginList.contains(item)) {
-									logoutList.add(item);
+							String reply = Protocol.checkLogin + Protocol.seperator + id + Protocol.seperator + "Y";
+							oos.writeObject(reply); // 로그인 성공
+
+							List<User> userList = userService.getAllUserList();
+							StringBuilder sb = new StringBuilder();
+							for (int i = 0; i < userList.size(); i++) {
+								User user = userList.get(i);
+
+								if(i < userList.size()-1){
+									sb.append(user.getId()).append(",");
+								}else{
+									sb.append(user.getId());
 								}
 							}
-							oos.writeObject("120#out#" + logoutList); // 로그아웃 리스트 
-							
+							oos.writeObject("120#in#" + sb.toString()); // 로그인 리스트
+
 							
 						} else {
-							oos.writeObject("100#N#" + id); // 로그인  실패 
+							oos.writeObject("100#N"); // 로그인  실패 
 						}
 						
 						break;

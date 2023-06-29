@@ -1,4 +1,4 @@
-package com.chatting.server.model.sample;
+package com.chatting.server.sample;
 
 import java.io.BufferedReader;
 import java.io.IOException;
