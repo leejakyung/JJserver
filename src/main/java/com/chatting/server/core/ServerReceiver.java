@@ -76,11 +76,27 @@ public class ServerReceiver extends Thread{
 						String pw = loginResult[2];
 
 						List<User> userList = userService.getAllUserList();
-						getUserList();
+						List<String> totalUserId = new ArrayList<String>();
+						List<String> loginList = new ArrayList<String>();
+						List<String> logoutList = new ArrayList<String>();
+						
+						for (int i = 0; i < userList.size(); i++) {
+							String user_id = userList.get(i).getId();
+							totalUserId.add(user_id);
+						}
+//						getUserList();
 
 						boolean result = validateUser(id, pw);
 						if(result) {
 							oos.writeObject("100#Y"); // 로그인 성공
+							loginList.add(id);	
+							oos.writeObject("120#in#" + loginList); // 로그인 리스트 
+							for(String item : totalUserId) {
+								if(!loginList.contains(item)) {
+									logoutList.add(item);
+								}
+							}
+							oos.writeObject("120#out#" + logoutList); // 로그아웃 리스트 
 							
 							
 						} else {
