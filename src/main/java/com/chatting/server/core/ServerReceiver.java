@@ -29,9 +29,14 @@ public class ServerReceiver extends Thread{
 	private List<ServerReceiver> onlineList;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
+    private String client_id;
+    
 
+    public String getClient_id() {
+		return client_id;
+	}
 
-    public ServerReceiver(Socket socket){
+	public ServerReceiver(Socket socket){
         this.socket = socket;
         try{
             ois = new ObjectInputStream(socket.getInputStream());
@@ -79,19 +84,37 @@ public class ServerReceiver extends Thread{
 						if(result) {
 							String reply = Protocol.checkLogin + Protocol.seperator + id + Protocol.seperator + "Y";
 							oos.writeObject(reply); // 로그인 성공
-
-							List<User> userList = userService.getAllUserList();
-							StringBuilder sb = new StringBuilder();
-							for (int i = 0; i < userList.size(); i++) {
-								User user = userList.get(i);
-
-								if(i < userList.size()-1){
-									sb.append(user.getId()).append(",");
-								}else{
-									sb.append(user.getId());
-								}
+							
+							List<String> onlineUserList = new ArrayList<String>();
+							List<String> offlineUserList = new ArrayList<String>();
+							
+							client_id = id; // 로그인 한 아이디 저장
+							
+							for (int i = 0; i < onlineList.size(); i++) {
+								String user = onlineList.get(i).getClient_id();
+								onlineUserList.add(user);
+								
 							}
-							oos.writeObject("120#in#" + sb.toString()); // 로그인 리스트
+							
+							oos.writeObject("120#" + onlineUserList); // 온라인 리스트 클라이언트에 전송
+							
+							List<User> userList = userService.getAllUserList();
+
+//							StringBuilder sb = new StringBuilder();
+							for (int i = 0; i < userList.size(); i++) {
+								String user = userList.get(i).getId();
+								if(!onlineUserList.contains(user)) {
+									offlineUserList.add(user);
+								}
+						
+							}
+							
+							
+							oos.writeObject("121#" + offlineUserList); // 오프라인 리스트 클라이언트에 전송
+							
+							
+
+							
 
 							
 						} else {
