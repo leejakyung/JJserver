@@ -95,7 +95,7 @@ public class ServerReceiver extends Thread{
 
 							
 						} else {
-							oos.writeObject("100#N"); // 로그인  실패 
+							oos.writeObject(Protocol.checkLogin + Protocol.seperator + id + Protocol.seperator + "N"); // 로그인  실패 
 						}
 						
 						break;
