@@ -122,7 +122,23 @@ public class ServerReceiver extends Thread{
 						}
 						
 						break;
-					case Protocol.createRoomView:
+					case Protocol.createRoom:
+						
+						String myId = arr[1];
+						String targetId = arr[2];
+						
+						List<String> targetIdList = new ArrayList<String>();
+						List<String> newChattingList = new ArrayList<String>();
+						
+						if(!targetIdList.contains(targetId)) { // 새로운
+							targetIdList.add(targetId);
+							oos.writeObject(Protocol.createRoom + Protocol.seperator + targetId + Protocol.seperator + "new");
+						} else { // 기존
+							oos.writeObject(Protocol.createRoom + Protocol.seperator + targetId + Protocol.seperator + "exsit");
+						}
+						
+						
+			
 
 
 						break;
