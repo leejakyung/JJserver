@@ -30,7 +30,7 @@ public class ServerReceiver extends Thread{
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private String client_id;
-    
+    private List<String> targetIdList;
 
     public String getClient_id() {
 		return client_id;
@@ -127,20 +127,15 @@ public class ServerReceiver extends Thread{
 						String myId = arr[1];
 						String targetId = arr[2];
 						
-						List<String> targetIdList = new ArrayList<String>();
-						List<String> newChattingList = new ArrayList<String>();
+						targetIdList = new ArrayList<String>();
 						
-						if(!targetIdList.contains(targetId)) { // 새로운
+						if(!targetIdList.contains(targetId)) { // 새로운 채팅방을 생성해야 하는 유저
 							targetIdList.add(targetId);
 							oos.writeObject(Protocol.createRoom + Protocol.seperator + targetId + Protocol.seperator + "new");
-						} else { // 기존
-							oos.writeObject(Protocol.createRoom + Protocol.seperator + targetId + Protocol.seperator + "exsit");
+						} else { // 기존에 채팅방이 있는 유저
+							oos.writeObject(Protocol.createRoom + Protocol.seperator + targetId + Protocol.seperator + "exist");
 						}
 						
-						
-			
-
-
 						break;
 					default:
 
