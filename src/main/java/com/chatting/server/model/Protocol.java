@@ -17,7 +17,8 @@ public class Protocol implements Serializable{
 	public static final String checkLogin = "100"; //로그인
 	public static final String addUser = "110"; //회원가입
 	public static final String addUserView = "111";//회원가입 화면 오픈
-	public static final String showUser = "120"; //유저리스트
+	public static final String onUser = "120"; //온라인유저 리스트
+	public static final String offUser = "121"; //오프라인유저 리스트
 	public static final String logout = "130"; //로그아웃
 	
 	//채팅방 생성 관련 프로토콜

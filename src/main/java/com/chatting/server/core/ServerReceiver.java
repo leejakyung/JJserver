@@ -96,7 +96,7 @@ public class ServerReceiver extends Thread{
 								
 							}
 							
-							oos.writeObject("120#" + onlineUserList); // 온라인 리스트 클라이언트에 전송
+							oos.writeObject(Protocol.onUser + Protocol.seperator + onlineUserList); // 온라인 리스트 클라이언트에 전송
 							
 							List<User> userList = userService.getAllUserList();
 
@@ -110,11 +110,7 @@ public class ServerReceiver extends Thread{
 							}
 							
 							
-							oos.writeObject("121#" + offlineUserList); // 오프라인 리스트 클라이언트에 전송
-							
-							
-
-							
+							oos.writeObject(Protocol.offUser + Protocol.seperator + offlineUserList); // 오프라인 리스트 클라이언트에 전송
 
 							
 						} else {
@@ -131,10 +127,19 @@ public class ServerReceiver extends Thread{
 						
 						if(!targetIdList.contains(targetId)) { // 새로운 채팅방을 생성해야 하는 유저
 							targetIdList.add(targetId);
-							oos.writeObject(Protocol.createRoom + Protocol.seperator + targetId + Protocol.seperator + "new");
+							oos.writeObject(Protocol.createRoom + Protocol.seperator + myId + Protocol.seperator + targetId + Protocol.seperator + "new");
 						} else { // 기존에 채팅방이 있는 유저
-							oos.writeObject(Protocol.createRoom + Protocol.seperator + targetId + Protocol.seperator + "exist");
+							oos.writeObject(Protocol.createRoom + Protocol.seperator + myId + Protocol.seperator + targetId + Protocol.seperator + "exist");
 						}
+						
+						List<String> targetUserList = new ArrayList<String>();
+						
+						for (int i = 0; i < targetIdList.size(); i++) {
+							String user = targetIdList.get(i);
+							targetUserList.add(user);
+						}
+						
+						oos.writeObject(Protocol.showRoom + Protocol.seperator + targetUserList); // 상대아이디 리스트를 클라이언트로 전송
 						
 						break;
 					default:
