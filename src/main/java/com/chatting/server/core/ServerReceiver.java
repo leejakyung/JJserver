@@ -30,12 +30,14 @@ public class ServerReceiver extends Thread{
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private String client_id;
-    private List<String> targetIdList;
+    private List<String> targetIdList = new ArrayList<String>();
+    private List<String> roomNameList = new ArrayList<String>(); 
+
 
     public String getClient_id() {
 		return client_id;
 	}
-
+    
 	public ServerReceiver(Socket socket){
         this.socket = socket;
         try{
@@ -90,6 +92,7 @@ public class ServerReceiver extends Thread{
 							
 							client_id = id; // 로그인 한 아이디 저장
 							
+							
 							for (int i = 0; i < onlineList.size(); i++) {
 								String user = onlineList.get(i).getClient_id();
 								onlineUserList.add(user);
@@ -109,8 +112,9 @@ public class ServerReceiver extends Thread{
 						
 							}
 							
-							
-							oos.writeObject(Protocol.offUser + Protocol.seperator + offlineUserList); // 오프라인 리스트 클라이언트에 전송
+							broadcasting(onlineUserList, offlineUserList);
+					
+//							oos.writeObject(Protocol.offUser + Protocol.seperator + offlineUserList); // 오프라인 리스트 클라이언트에 전송
 
 							
 						} else {
@@ -120,26 +124,37 @@ public class ServerReceiver extends Thread{
 						break;
 					case Protocol.createRoom:
 						
-						String myId = arr[1];
-						String targetId = arr[2];
+						String myId = arr[1]; // 내 아이디
+						String targetId = arr[2]; // 내가 선택한 아이디
+						String room = arr [3]; // 방이름  - 채팅목록
 						
-						targetIdList = new ArrayList<String>();
-						
-						if(!targetIdList.contains(targetId)) { // 새로운 채팅방을 생성해야 하는 유저
-							targetIdList.add(targetId);
+						List<String> targetUserList = new ArrayList<String>();
+						List<String> roomNameTotal = new ArrayList<String>();
+
+
+						if(!targetIdList.contains(targetId)) { // 새로운 채팅방을 생성해야 하는 유저	
+							targetIdList.add(targetId); // 타겟리스트에 있는 아이디가 아이디가 아니기 때문에 타겟 아이디 리스트에 추가
+							roomNameList.add(room);
 							oos.writeObject(Protocol.createRoom + Protocol.seperator + myId + Protocol.seperator + targetId + Protocol.seperator + "new");
 						} else { // 기존에 채팅방이 있는 유저
 							oos.writeObject(Protocol.createRoom + Protocol.seperator + myId + Protocol.seperator + targetId + Protocol.seperator + "exist");
 						}
-						
-						List<String> targetUserList = new ArrayList<String>();
+
 						
 						for (int i = 0; i < targetIdList.size(); i++) {
-							String user = targetIdList.get(i);
-							targetUserList.add(user);
+							String targetUser = targetIdList.get(i);
+							targetUserList.add(targetUser);
 						}
 						
-						oos.writeObject(Protocol.showRoom + Protocol.seperator + targetUserList); // 상대아이디 리스트를 클라이언트로 전송
+
+						for (int i = 0; i < roomNameList.size(); i++) {
+							String roomName = roomNameList.get(i);
+							roomNameTotal.add(roomName);
+						}
+						
+						oos.writeObject(Protocol.showRoom + Protocol.seperator + roomNameTotal + Protocol.seperator + targetUserList); // 채팅방목록 보여주기
+						
+						
 						
 						break;
 					default:
@@ -208,9 +223,10 @@ public class ServerReceiver extends Thread{
 		return list;
 	}
 
-	private void broadcasting() throws IOException {
-		for (ServerReceiver receiver: onlineList) {
-			receiver.getOos().writeObject("유저리스트");
+	private void broadcasting(List<String> onlineUserList, List<String> offlineUserList) throws IOException {
+		for (ServerReceiver receiver: onlineList) { 
+			receiver.getOos().writeObject(Protocol.onUser + Protocol.seperator + onlineUserList);
+			receiver.getOos().writeObject(Protocol.offUser + Protocol.seperator + offlineUserList);
 		}
 	}
 
