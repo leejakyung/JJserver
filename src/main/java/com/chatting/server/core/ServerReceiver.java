@@ -87,6 +87,8 @@ public class ServerReceiver extends Thread{
 							String reply = Protocol.checkLogin + Protocol.seperator + id + Protocol.seperator + "Y";
 							oos.writeObject(reply); // 로그인 성공
 							
+							
+							
 							List<String> onlineUserList = new ArrayList<String>();
 							List<String> offlineUserList = new ArrayList<String>();
 							
@@ -150,9 +152,23 @@ public class ServerReceiver extends Thread{
 						for (int i = 0; i < roomNameList.size(); i++) {
 							String roomName = roomNameList.get(i);
 							roomNameTotal.add(roomName);
-						}
+						}						
 						
 						oos.writeObject(Protocol.showRoom + Protocol.seperator + roomNameTotal + Protocol.seperator + targetUserList); // 채팅방목록 보여주기
+						
+						
+						
+						break;
+						
+					case Protocol.sendMessage:
+						
+						myId = arr[1]; // 내 아이디
+						targetId = arr[2]; // 내가 선택한 아이디
+						String message = arr[3]; // 메세지 
+						
+						
+						sendTargetIdMessage(myId, targetId, message);
+						
 						
 						
 						
@@ -224,11 +240,22 @@ public class ServerReceiver extends Thread{
 	}
 
 	private void broadcasting(List<String> onlineUserList, List<String> offlineUserList) throws IOException {
-		for (ServerReceiver receiver: onlineList) { 
+		for (ServerReceiver receiver: onlineList) { 			
 			receiver.getOos().writeObject(Protocol.onUser + Protocol.seperator + onlineUserList);
 			receiver.getOos().writeObject(Protocol.offUser + Protocol.seperator + offlineUserList);
 		}
 	}
+	
+	private void sendTargetIdMessage(String myId, String targetId, String message) throws IOException{
+		
+		for (ServerReceiver receiver : onlineList) {
+			if(receiver.getClient_id().equals(targetId)){
+				receiver.getOos().writeObject(Protocol.sendMessage + Protocol.seperator + receiver.getClient_id() + Protocol.seperator + myId + Protocol.seperator + message);
+			}
+		}
+			
+	}
+	
 
 	public ObjectOutputStream getOos(){
 		return this.oos;
