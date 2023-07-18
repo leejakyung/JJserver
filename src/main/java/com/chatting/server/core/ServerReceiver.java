@@ -137,11 +137,13 @@ public class ServerReceiver extends Thread{
 						if(!targetIdList.contains(targetId)) { // 새로운 채팅방을 생성해야 하는 유저	
 							targetIdList.add(targetId); // 타겟리스트에 있는 아이디가 아이디가 아니기 때문에 타겟 아이디 리스트에 추가
 							roomNameList.add(room);
-							oos.writeObject(Protocol.createRoom + Protocol.seperator + myId + Protocol.seperator + targetId + Protocol.seperator + "new");
+							oos.writeObject(Protocol.createRoom + Protocol.seperator + myId + Protocol.seperator + targetId + Protocol.seperator + room);
 						} else { // 기존에 채팅방이 있는 유저
-							oos.writeObject(Protocol.createRoom + Protocol.seperator + myId + Protocol.seperator + targetId + Protocol.seperator + "exist");
+							oos.writeObject(Protocol.createRoom + Protocol.seperator + myId + Protocol.seperator + targetId + Protocol.seperator + room);
 						}
 
+						createChatRoomMessage(myId, targetId, room);
+						
 						
 						for (int i = 0; i < targetIdList.size(); i++) {
 							String targetUser = targetIdList.get(i);
@@ -164,10 +166,11 @@ public class ServerReceiver extends Thread{
 						
 						myId = arr[1]; // 내 아이디
 						targetId = arr[2]; // 내가 선택한 아이디
-						String message = arr[3]; // 메세지 
+						room = arr[3]; // 채팅방 이름
+						String message = arr[4]; // 메세지 
 						
 						
-						sendTargetIdMessage(myId, targetId, message);
+						sendTargetIdMessage(myId, targetId, room, message);
 						
 						
 						
@@ -246,14 +249,24 @@ public class ServerReceiver extends Thread{
 		}
 	}
 	
-	private void sendTargetIdMessage(String myId, String targetId, String message) throws IOException{
+	private void createChatRoomMessage(String myId, String targetId, String room) throws IOException{
 		
 		for (ServerReceiver receiver : onlineList) {
 			if(receiver.getClient_id().equals(targetId)){
-				receiver.getOos().writeObject(Protocol.sendMessage + Protocol.seperator + receiver.getClient_id() + Protocol.seperator + myId + Protocol.seperator + message);
+				receiver.getOos().writeObject(Protocol.createRoom + Protocol.seperator + receiver.getClient_id() + Protocol.seperator + myId + Protocol.seperator + room);
 			}
 		}
 			
+	}
+	
+	private void sendTargetIdMessage(String myId, String targetId, String room, String message) throws IOException{
+
+		for (ServerReceiver receiver : onlineList) {
+			if(receiver.getClient_id().equals(targetId)){
+				receiver.getOos().writeObject(Protocol.sendMessage + Protocol.seperator + receiver.getClient_id() + Protocol.seperator + myId + Protocol.seperator + room + Protocol.seperator + message);
+			}
+		}
+
 	}
 	
 
