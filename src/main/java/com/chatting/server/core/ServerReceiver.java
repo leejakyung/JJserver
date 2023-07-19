@@ -30,8 +30,6 @@ public class ServerReceiver extends Thread{
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private String client_id;
-    private List<String> targetIdList = new ArrayList<String>();
-    private List<String> roomNameList = new ArrayList<String>(); 
 
 
     public String getClient_id() {
@@ -128,39 +126,32 @@ public class ServerReceiver extends Thread{
 						
 						String myId = arr[1]; // 내 아이디
 						String targetId = arr[2]; // 내가 선택한 아이디
-						String room = arr [3]; // 방이름  - 채팅목록
-						
-						List<String> targetUserList = new ArrayList<String>();
-						List<String> roomNameTotal = new ArrayList<String>();
+						String room = arr [3]; // 채팅방 이름  
 
 
-						if(!targetIdList.contains(targetId)) { // 새로운 채팅방을 생성해야 하는 유저	
-							targetIdList.add(targetId); // 타겟리스트에 있는 아이디가 아이디가 아니기 때문에 타겟 아이디 리스트에 추가
-							roomNameList.add(room);
-							oos.writeObject(Protocol.createRoom + Protocol.seperator + myId + Protocol.seperator + targetId + Protocol.seperator + room);
-						} else { // 기존에 채팅방이 있는 유저
-							oos.writeObject(Protocol.createRoom + Protocol.seperator + myId + Protocol.seperator + targetId + Protocol.seperator + room);
-						}
-
+						oos.writeObject(Protocol.createRoom + Protocol.seperator + myId + Protocol.seperator + targetId + Protocol.seperator + room); // 채팅방 생성
+					
 						createChatRoomMessage(myId, targetId, room);
+											
+						
+						oos.writeObject(Protocol.showRoom + Protocol.seperator + myId + Protocol.seperator + targetId + Protocol.seperator + room); // 채팅방목록 보여주기
 						
 						
-						for (int i = 0; i < targetIdList.size(); i++) {
-							String targetUser = targetIdList.get(i);
-							targetUserList.add(targetUser);
-						}
-						
-
-						for (int i = 0; i < roomNameList.size(); i++) {
-							String roomName = roomNameList.get(i);
-							roomNameTotal.add(roomName);
-						}						
-						
-						oos.writeObject(Protocol.showRoom + Protocol.seperator + roomNameTotal + Protocol.seperator + targetUserList); // 채팅방목록 보여주기
-						
-						
+						createChatRoomListMessage(myId, targetId, room);
 						
 						break;
+						
+					case Protocol.createRoomView:
+
+						myId = arr[1]; // 내 아이디
+						targetId = arr[2]; // 내가 선택한 아이디
+						room = arr [3]; // 채팅방 이름  
+
+						oos.writeObject(Protocol.createRoomView + Protocol.seperator + myId + Protocol.seperator + targetId + Protocol.seperator + room); // 채팅목록에서 입장하기 버튼으로 채팅방 생성
+
+						createButtonChatRoomMessage(myId, targetId, room);
+
+						break;	
 						
 					case Protocol.sendMessage:
 						
@@ -241,26 +232,46 @@ public class ServerReceiver extends Thread{
 
 		return list;
 	}
-
-	private void broadcasting(List<String> onlineUserList, List<String> offlineUserList) throws IOException {
+	
+	// 모든 온라인 유저에게 온라인리스트 전송
+	private void broadcasting(List<String> onlineUserList, List<String> offlineUserList) throws IOException { 
 		for (ServerReceiver receiver: onlineList) { 			
 			receiver.getOos().writeObject(Protocol.onUser + Protocol.seperator + onlineUserList);
 			receiver.getOos().writeObject(Protocol.offUser + Protocol.seperator + offlineUserList);
 		}
 	}
 	
-	private void createChatRoomMessage(String myId, String targetId, String room) throws IOException{
-		
+	// 타겟아이디에게 채팅방 생성 메세지 전송
+	private void createChatRoomMessage(String myId, String targetId, String room) throws IOException{ 
 		for (ServerReceiver receiver : onlineList) {
 			if(receiver.getClient_id().equals(targetId)){
 				receiver.getOos().writeObject(Protocol.createRoom + Protocol.seperator + receiver.getClient_id() + Protocol.seperator + myId + Protocol.seperator + room);
 			}
-		}
-			
+		}			
 	}
 	
-	private void sendTargetIdMessage(String myId, String targetId, String room, String message) throws IOException{
-
+	// 채팅목록에서 입장하기 버튼 클릭시 - 타겟아이디에게도 채팅방 생성 메세지 전송
+	private void createButtonChatRoomMessage(String myId, String targetId, String room) throws IOException{ 
+		for (ServerReceiver receiver : onlineList) {
+			if(receiver.getClient_id().equals(targetId)){
+				receiver.getOos().writeObject(Protocol.createRoomView + Protocol.seperator + receiver.getClient_id() + Protocol.seperator + myId + Protocol.seperator + room);
+			}
+		}			
+	}
+	
+	// 타겟아이디에게 채팅방목록 생성 메세지 전송
+	private void createChatRoomListMessage(String myId, String targetId, String room) throws IOException { 
+		for(ServerReceiver receiver : onlineList) {
+			if(receiver.getClient_id().equals(targetId)) {
+				receiver.getOos().writeObject(Protocol.showRoom + Protocol.seperator + receiver.getClient_id() + Protocol.seperator + myId + Protocol.seperator + room);
+			}
+		}
+		
+		
+	}
+	
+	// 타겟아이디에게 채팅메세지 전송
+	private void sendTargetIdMessage(String myId, String targetId, String room, String message) throws IOException{ 
 		for (ServerReceiver receiver : onlineList) {
 			if(receiver.getClient_id().equals(targetId)){
 				receiver.getOos().writeObject(Protocol.sendMessage + Protocol.seperator + receiver.getClient_id() + Protocol.seperator + myId + Protocol.seperator + room + Protocol.seperator + message);
