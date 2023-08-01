@@ -99,8 +99,7 @@ public class ServerReceiver extends Thread{
 								
 							}
 							
-							oos.writeObject(Protocol.onUser + Protocol.seperator + onlineUserList); // 온라인 리스트 클라이언트에 전송
-							
+					
 							List<User> userList = userService.getAllUserList();
 
 //							StringBuilder sb = new StringBuilder();
@@ -114,7 +113,7 @@ public class ServerReceiver extends Thread{
 							
 							broadcasting(onlineUserList, offlineUserList);
 					
-//							oos.writeObject(Protocol.offUser + Protocol.seperator + offlineUserList); // 오프라인 리스트 클라이언트에 전송
+
 
 							
 						} else {
