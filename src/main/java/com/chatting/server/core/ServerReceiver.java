@@ -232,9 +232,18 @@ public class ServerReceiver extends Thread{
 			
 			Map<String, String> user = new HashMap<String, String>();
 			
-			if(userList.get(i).get("id").contains(id)) {
-				if(userList.get(i).get("pw").contains(pw)) {
-					return true;
+			if(userList.get(i).get("id").equals(id)) {
+				if(userList.get(i).get("pw").equals(pw)) {
+					for (ServerReceiver receiver : onlineList) {
+							if(receiver.getClient_id() != null) {
+								if(receiver.getClient_id().equals(id)) {
+									return false;
+								}
+							} else {
+								return true;
+							}
+					}
+					
 				}
 				return false;
 			}
