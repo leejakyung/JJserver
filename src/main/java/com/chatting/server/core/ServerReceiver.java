@@ -84,14 +84,11 @@ public class ServerReceiver extends Thread{
 						if(result) {
 							String reply = Protocol.checkLogin + Protocol.seperator + id + Protocol.seperator + "Y";
 							oos.writeObject(reply); // 로그인 성공
-							
-							
+	
+							client_id = id; // 로그인 한 아이디 저장
 							
 							List<String> onlineUserList = new ArrayList<String>();
 							List<String> offlineUserList = new ArrayList<String>();
-							
-							client_id = id; // 로그인 한 아이디 저장
-							
 							
 							for (int i = 0; i < onlineList.size(); i++) {
 								String user = onlineList.get(i).getClient_id();
@@ -121,6 +118,52 @@ public class ServerReceiver extends Thread{
 						}
 						
 						break;
+						
+					case Protocol.logout:	
+						
+						id = arr[1];
+						
+						String reply = Protocol.logout + Protocol.seperator + id + Protocol.seperator + "Y";
+						oos.writeObject(reply); // 로그아웃 성공 
+						
+
+						List<String> onlineUserList = new ArrayList<String>();
+						List<String> offlineUserList = new ArrayList<String>();
+						
+						for (int i = 0; i < onlineList.size(); i++) {
+							String user = onlineList.get(i).getClient_id();
+							onlineUserList.add(user);
+							if(onlineUserList.contains(id)) {
+								onlineUserList.remove(id);								
+							}							
+							
+						}
+						
+						for (int i = 0; i < onlineList.size(); i++) {
+							if(onlineList.get(i).getClient_id().equals(id)) {
+								onlineList.remove(i);
+							}
+						}
+						
+						
+						
+						List<User> userList = userService.getAllUserList();
+
+						for (int i = 0; i < userList.size(); i++) {
+							String user = userList.get(i).getId();
+							if(!onlineUserList.contains(user)) {
+								offlineUserList.add(user);
+							}
+					
+						}
+						
+						
+						
+						sendLogoutMessage(onlineUserList, offlineUserList);
+						
+						
+						break;
+						
 					case Protocol.createRoom:
 						
 						String myId = arr[1]; // 내 아이디
@@ -234,6 +277,14 @@ public class ServerReceiver extends Thread{
 	
 	// 모든 온라인 유저에게 온라인리스트 전송
 	private void broadcasting(List<String> onlineUserList, List<String> offlineUserList) throws IOException { 
+		for (ServerReceiver receiver: onlineList) { 			
+			receiver.getOos().writeObject(Protocol.onUser + Protocol.seperator + onlineUserList);
+			receiver.getOos().writeObject(Protocol.offUser + Protocol.seperator + offlineUserList);
+		}
+	}
+	
+	// 모든 온라인 유저에게 온라인리스트 전송
+	private void sendLogoutMessage(List<String> onlineUserList, List<String> offlineUserList) throws IOException { 
 		for (ServerReceiver receiver: onlineList) { 			
 			receiver.getOos().writeObject(Protocol.onUser + Protocol.seperator + onlineUserList);
 			receiver.getOos().writeObject(Protocol.offUser + Protocol.seperator + offlineUserList);
