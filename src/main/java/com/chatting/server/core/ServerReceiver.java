@@ -243,6 +243,7 @@ public class ServerReceiver extends Thread{
 								return true;
 							}
 					}
+					return true;
 					
 				}
 				return false;
